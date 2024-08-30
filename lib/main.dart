@@ -3,6 +3,7 @@ import 'package:demo_flutter/pages/account_page.dart';
 import 'package:demo_flutter/pages/cart_page.dart';
 import 'package:demo_flutter/pages/checkout_page.dart';
 import 'package:demo_flutter/pages/home_page.dart';
+import 'package:demo_flutter/pages/product_details_page.dart';
 import 'package:demo_flutter/pages/product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -53,7 +54,13 @@ class MyApp extends StatelessWidget {
         path: '/account',
         builder: (BuildContext context, GoRouterState state) => const AccountPage(),
       ),
-     
+     GoRoute(
+      path: '/product/:productId',
+      builder: (context, state) {
+        final productId = int.parse(state.pathParameters['productId']!);
+        return ProductDetailsPage(productId: productId);
+      },
+    ),
     ],
   );
 }

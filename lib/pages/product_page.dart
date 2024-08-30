@@ -1,7 +1,7 @@
-import 'package:demo_flutter/data/products_provider.dart';
 import 'package:demo_flutter/model/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key});
@@ -43,7 +43,7 @@ class ProductPage extends StatelessWidget {
             ),
           ],
         ),
-         leading: IconButton(
+        leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
@@ -73,75 +73,95 @@ class ProductPage extends StatelessWidget {
 
           final products = snapshot.data!.products;
 
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              int crossAxisCount;
-              double childAspectRatio;
-
-              // Determine the number of columns and aspect ratio based on screen width
-              if (constraints.maxWidth >= 1200) {
-                crossAxisCount = 6; // Large screens
-                childAspectRatio = 0.9;
-              } else if (constraints.maxWidth >= 800) {
-                crossAxisCount = 3; // Medium screens
-                childAspectRatio = 0.8;
-              } else {
-                crossAxisCount = 2; // Small screens
-                childAspectRatio = 1.0;
-              }
-
-              return GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  childAspectRatio: childAspectRatio,
-                  mainAxisSpacing: 16.0,
-                  crossAxisSpacing: 16.0,
-                ),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return Card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Image.network(
-                            product.thumbnail,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4.0),
-                              Text(
-                                '\$${product.price.toString()}',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          );
+          return LayoutBuilderMethod(products);
         },
       ),
+    );
+  }
+
+  Future<ProductsModel> fetchProducts() async {
+    final response = await http.get(Uri.parse('https://dummyjson.com/products'));
+
+    if (response.statusCode == 200) {
+      return productsModelFromJson(response.body);
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
+
+  LayoutBuilder LayoutBuilderMethod(List<Product> products) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount;
+        double childAspectRatio;
+
+        // Determine the number of columns and aspect ratio based on screen width
+        if (constraints.maxWidth >= 1200) {
+          crossAxisCount = 6; // Large screens
+          childAspectRatio = 0.9;
+        } else if (constraints.maxWidth >= 800) {
+          crossAxisCount = 3; // Medium screens
+          childAspectRatio = 0.8;
+        } else {
+          crossAxisCount = 2; // Small screens
+          childAspectRatio = 1.0;
+        }
+
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            childAspectRatio: childAspectRatio,
+            mainAxisSpacing: 16.0,
+            crossAxisSpacing: 16.0,
+          ),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            final product = products[index];
+            return GestureDetector(
+              onTap: () {
+                // Navigate to ProductDetailsPage with the product ID
+                context.go('/product/${product.id}');
+              },
+              child: Card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Image.network(
+                        product.thumbnail,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4.0),
+                          Text(
+                            '\$${product.price.toString()}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

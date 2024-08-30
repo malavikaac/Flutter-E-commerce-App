@@ -7,13 +7,13 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar:AppBar(
         backgroundColor: const Color.fromARGB(255, 241, 195, 249),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Text("Homeheaven"),
-            const SizedBox(width: 500),
+            const SizedBox(width: 400),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

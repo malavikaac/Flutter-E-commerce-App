@@ -13,7 +13,7 @@ class AccountPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Text("Homeheaven"),
-            const SizedBox(width: 500),
+            const SizedBox(width: 400),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -40,6 +40,10 @@ class AccountPage extends StatelessWidget {
               ],
             ),
           ],
+        ),
+         leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
         ),
         actions: [
           IconButton(
